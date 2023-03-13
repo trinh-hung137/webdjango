@@ -1,0 +1,9 @@
+Các bước cài đặt và chạy:
+B1: Tải và giải nén folder Nhom10_INT13162-05
+B2: Mở Visual Studio Code hoặc IDE nào có hỗ trợ Django
+B3: Mở folder Ecom trong folder vừa giải nén
+B4: Mở cửa sổ terminal mới
+B4: Tại cửa sổ terminal nhập: cd core --> Enter
+B5: Chạy project: python manage.py runserver
+	Link vào trang web:  http://127.0.0.1:8000
+	Link vào trang admin: http://127.0.0.1:8000/admin/

@@ -1,0 +1,41 @@
+{% extends 'store/main.html' %} {% comment %} kế thừa từ main.html {% endcomment %}
+{% load static %}
+{% block content %} {% comment %} bên trong khối block content này là những mẫu riêng biệt của từng thẻ  {% endcomment %}
+	<div class=row>
+		<div class="col-md-12">
+			<form class="card card-sm">
+				<div class="card-body row no-gutters align-items-center">
+					<div class="col">
+						<input type="search" name='item_name' placeholder="Search For Products" class="form-control form-control-borderless">
+					</div>
+					<div class="col-auto">
+						<button class="btn btn-success" type="submit">Search</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+	<div class="row">
+		{% for product in products %} 	{% comment %} vòng lặp tất cả các sản phẩm  {% endcomment %}
+		<div class="col-lg-4 py-3">
+			<img class="thumbnail" src="{{ product.imageURL}}"> {% comment %} sử dụng url hình ảnh để hình ảnh lỗi sẽ hiển thi ảnh nope no   {% endcomment %}
+			<div class="box-element product">
+				<h6><strong>{{product.name}}</strong></h6>
+				{% comment %} <h6><strong>{{product.detail}}</strong></h6> {% endcomment %}
+				<hr>
+
+				<button data-product = {{ product.id }} data-action="add" class="btn btn-outline-secondary add-btn update-cart">Add to Cart</button>
+				<h4 style="display: inline-block; float: right"><strong> ${{product.price | floatformat:2}}</strong></h4>
+				<button aria-expanded="false"  class="btn btn-outline-danger" data-toggle="collapse" data-target="#boxnoidung">View</button>
+				<div class="collapse mt-4" id="boxnoidung">
+					<div class="card card-body bg-info">
+						<p class="card-text text-white">{{product.detail}}</p>
+					</div>
+				</div>
+				
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+
+{% endblock content %}

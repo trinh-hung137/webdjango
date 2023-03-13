@@ -1,0 +1,148 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block content %}
+     <div class="row">
+		<div class="col-lg-6">
+			<div class="box-element" id="form-wrapper">
+				<form id="form">
+					<div id="user-info">
+						<div class="form-field">
+							<input required class="form-control" type="text" name="name" placeholder="Name..">
+						</div>
+						<div class="form-field">
+							<input required class="form-control" type="email" name="email" placeholder="Email..">
+						</div>
+					</div>
+					
+					<div id="shipping-info">
+						<hr>
+						<p>Shipping Information:</p>
+						<hr>
+						<div class="form-field">
+							<input class="form-control" type="text" name="address" placeholder="Address..">
+						</div>
+						<div class="form-field">
+							<input class="form-control" type="text" name="city" placeholder="City...">
+						</div>						
+						<div class="form-field">
+							<input class="form-control" type="text" name="zipcode" placeholder="Zip code...">
+						</div>
+						<div class="form-field">
+							<input class="form-control" type="text" name="phone" placeholder="Phone numer...">
+						</div> 
+					</div>
+
+					<hr>
+					<input id="form-button" class="btn btn-success btn-block" type="submit" value="Continue">
+				</form>
+			</div>
+
+			<br>
+			<div class="box-element hidden" id="payment-info">
+				<button id="make-payment"> Make Payment </button>
+			</div>
+			
+		</div>
+
+		<div class="col-lg-6">
+			<div class="box-element">
+				<a  class="btn btn-outline-dark" href="{% url 'cart' %}">&#x2190; Back to Cart</a>
+				<hr>
+				<h3>Order Summary</h3>
+				<hr>
+				{% for item in items%}	{% comment %} vòng for chạy tất cả các sản phẩm trong giỏ hàng {% endcomment %}
+				<div class="cart-row">
+					<div style="flex:2"><img class="row-image" src="{{item.product.imageURL}}"></div>
+					<div style="flex:2">{{item.product.name}}</div>
+					<div style="flex:1">${{item.product.price}}</div>
+					<div style="flex:1">x{{item.quantity}}</div>
+				</div>
+				{% endfor %}
+				<h5>Items:{{order.get_cart_items}}</h5>
+				<h5>Total:${{order.get_cart_total|floatformat:2}}</h5>
+			</div>
+		</div>
+	</div> 
+<script type="text/javascript"> 
+	var shipping = '{{order.shipping}}'
+	var total = '{{order.get_cart_total}}'
+	if(shipping == 'False')
+	{
+		document.getElementById('shipping-info').innerHTML = ''
+	}
+	
+	if(user != 'AnonymousUser')
+	{
+		if(shipping == 'False' && user != 'AnonymousUser')
+		{
+			document.getElementById('form-wrapper').classList.add('hidden');
+			document.getElementById('payment-info').classList.remove('hidden');
+		}
+	}
+		
+	var form = document.getElementById('form')		// xử lý việc submit sẽ ẩn nút continue và hiện lên các hình thức thanh toán
+
+	form.addEventListener('submit', function(e)
+	{
+		e.preventDefault()
+		console.log('Form submitted...')
+		document.getElementById('form-button').classList.add('hidden')
+		document.getElementById('payment-info').classList.remove('hidden')
+	})
+
+	document.getElementById('make-payment').addEventListener('click', function(e){
+		submitFormData()
+	})
+
+	function submitFormData()		// xử lý chức năng thanh toán
+	{
+		console.log('Payment button clicked')
+		// (101 - 111) tạo 2 đối tượng user và shipping riêng biệt trong backend
+		var userFormData = {
+			'name': user,
+			'email': null,
+			'total': total,
+		}
+		var shippingInfo = {
+			'address': null,
+			'city': null,			
+			'zipcode': null,
+			'phone': null,
+		}
+		// đặt các giá trị thuộc tính đối tượng trước khi gửi đến backend
+		if(shipping != 'False')
+		{
+			shippingInfo.address = form.address.value
+			shippingInfo.city = form.city.value
+			shippingInfo.zipcode = form.zipcode.value
+			shippingInfo.phone = form.phone.value
+		}
+		if(user == 'AnonymousUser')
+		{
+			userFormData.name = form.name.value
+			userFormData.email = form.email.value
+		}
+//
+		console.log('Shipping Info:', shippingInfo)
+		console.log('User Info:', userFormData)
+//
+
+		var url = '/process_order/' // url chế độ xem
+		fetch(url,{					// lệnh nạp dữ liệu sau mỗi thao tác thêm sản phẩm vào url để cập nhật mặt hàng
+			method:'POST',
+			headers:
+			{
+				'Content-Type' : 'application/json',
+			 	'X-CSRFToken' : csrftoken, 
+			},
+			body: JSON.stringify({'form': userFormData, 'shipping':shippingInfo})	// các dữ liệu được gửi dưới dạng chuỗi 
+		})
+		.then((response) => response.json())	 // trả lại phản hồi dạng JSON đến view
+		.then((data) => {							 // xử lý dữ liệu, làm mới lại trang
+			console.log('Success:', data);
+			alert('Transation completed');
+			window.location.href = "{% url 'store' %}"
+		})
+	}
+</script>
+{% endblock content %}

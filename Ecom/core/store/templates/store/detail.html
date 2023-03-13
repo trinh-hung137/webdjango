@@ -1,0 +1,37 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block content %}
+	{% for item in items %}
+        <div class="container">
+            <div class="row">
+                <div class="col py-5">
+                    <img src="{{ item.product.imageURL }}" width="640px" height="360px" >
+                </div>
+                <div class="col py-5">
+                    <ul>
+                        <li> 
+                            <a class="text-success">Tên sản phẩm:</a>
+                            {{ item.product.name }} 
+                        </li>
+                                
+                        <li>
+                            <a class="text-success"> Giá sản phẩm: </a>
+                            ${{item.product.price}} 
+                        </li>
+                
+                        <li> 
+                            <a class="text-success"> Thông tin sản phẩm: </a>
+                            {{ item.product.detail }} 
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+	{% endfor %}
+{% endblock content %}
+
+
+
+
+
+
